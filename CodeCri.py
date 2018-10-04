@@ -23,12 +23,12 @@ def print_panel(panel):
         for j in range(0,len(panel[i])):
             sys.stdout.write(panel[i][j])
         
-def pared_a_numero(panel):
+"""def pared_a_numero(panel):
     for i in range(0,len(panel)):
         for j in range(0,len(panel[i])):
             if(panel[i][j] == '#'):
                panel[i][j]='-1'
-    return 0
+    return 0"""
 
 def busca_pos_ij(panel,id):
     auxI = -1   #caso de no encontrado
@@ -113,19 +113,16 @@ if __name__ == '__main__':
     for j in range(0,(len(aux2))):
         
         aux = aux2[j].split()
-        aux = np.array(aux,dtype=(np.unicode_,16)) #enrique sabadellense
-        aux[aux=="#"] = "-1"                        #enrique sabadellense
-        aux = np.array(aux,dtype=np.str)
+        aux = np.array(aux,dtype=(np.unicode_,16)) 
+        aux[aux=="#"] = "-1"                        
+        #aux = np.array(aux,dtype=np.str)
         #aux[aux=='#'] = '99'
         
         
         panel.append(aux)
         #panel.np.append(aux)
-    panel = np.array(panel,dtype=np.int)            #enrique sabadellense
+    panel = np.array(panel,dtype=np.int)           
     numeroAProbar = 8
     #print(numeroAProbar,"Es Vertical",es_vertical(panel,numeroAProbar)) # segundo parametro = numero a comprobar
     print(numeroAProbar,"Es Horizontal",es_horizontal(panel,numeroAProbar))
-    try:
-        value_index = panel.index(1)
-    except:
-        value_index = -1;
+    
