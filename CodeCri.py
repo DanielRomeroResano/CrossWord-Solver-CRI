@@ -86,20 +86,6 @@ def len_palabra(panel,id):
             i = i+1
     return longitud
 
-
-def classificarDiccionario(path,diccionari):
-    
-    for linea in open(path):
-        
-        palabra = []
-        aux = linea.strip('\t')
-        tamany = len(aux)
-        for code in bytearray(aux):
-            if (code != 10): palabra.append(code)
-        
-        diccionari[tamany-1].append(np.array(palabra,dtype=np.int8) )
-    return palabra
-
 ###########id###pos i###posj###esHoriz###tamaño########
 def tabla_ids(panel):
     tabla_ids = np.zeros((np.max(panel),5))
@@ -139,6 +125,102 @@ def tabla_ids(panel):
         tabla_ids[id-1]=auxLine
     return tabla_ids
 
+"""def buscarChoque(panel):
+    diccChoques = {}
+    
+    return diccChoques"""
+
+
+
+
+def classificarDiccionario(path,diccionari):
+    
+    for linea in open(path):
+        
+        palabra = []
+        aux = linea.strip('\t')
+        aux = linea.strip('\n')
+        tamany = len(aux)
+        for code in bytearray(aux):
+            #if (code != 10): 
+            palabra.append(code)
+        
+        
+        #diccionari[tamany-1].append(np.array(palabra,dtype=np.int8) )
+        palabra2 = np.asarray(palabra,dtype=np.int8)
+        #palabra2 = np.reshape(palabra2,(-1,tamany))
+        #palabra2.reshape(tamany-1,1)
+        diccionari[tamany] = np.append(diccionari[tamany], palabra2)
+        diccionari[tamany] = np.reshape(diccionari[tamany], (-1,tamany))
+        #np.ndarray.reshape()
+    return palabra2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def Domini(palabra,d):
+    #o mirar una variable que tiene la info
+    return d[palabra.size()]
+    
+
+
+#inicializar lva con 0
+def SatisfaRestriccions(dic,lva,pos):
+    #dic lista palabras
+    #lva tiene posi
+    #lva[pos][i[][(lva==i )]]
+    #cruz = lva[pos][lva!=0]
+    #for i in cruzpos:
+    #    dic[:][i==cruzvalor]
+    
+    
+    cruzpos = lva[pos][:].nonzero()
+    #cruzvalor = lva[pos][cruzpos]
+    if (np.any(dic[:][cruzpos==lva[pos][cruzpos]]) == True):
+        return True
+    return False
+    
+    #
+def Insertar(palabra,lva,pos):
+    lva[pos] = palabra
+    #tratar cruzes, tener un diccionario donde cada pos es una lista con nombre de id del juego
+    #y luego cada valor es pos 0 id choque y pos 1 posicion palabra. diccionario ya tendrai que estar rellenado
+     
+    
+    
+#def BorrarFront(lvna):
+    
+    
+#lvna lista
+#var[0] por ahora es numero de palabra
+    
+def Backtracking(lva, lvna, d):
+    if lvna.size() == 0: return(lva)
+    var=lvna[0]
+    lvna[0] = np.delete(lvna,0)
+    for i in Domini(var,d):
+        if SatisfaRestriccions(i,lva,var[0]):
+            res=Backtracking(Insertar(i,lva,var[0]),lvna,d)
+            #if np.any(res[:][:].nonzero()) != false:
+            if lvna.size() == 0:
+                return res
+    return 0
+
+
+
+
+
+
     
 if __name__ == '__main__':
     #crossword_CB.txt
@@ -161,11 +243,15 @@ if __name__ == '__main__':
 
     panel = np.array(panel,dtype=np.int8)            
     
-    #dicci = {}
-    #for i in range(2,16):
-     #   dicci[i] = []
-    #hola = classificarDiccionario(diccionari,dicci)
+    """for i in range(panelID[1:][0]):
+        diccChoque[i] = buscarChoque(panel,i); #panel choque devuelve un"""
     
+    dicci = {}
+    
+    for i in range(2,16):
+        dicci[i] = np.array([],dtype=np.int8)  
+        #np.ndarray.
+    hola = classificarDiccionario(diccionari,dicci)
     
     numeroAProbar = 4
     print
@@ -176,3 +262,42 @@ if __name__ == '__main__':
     print ("----------Tabla IDS----------")
     print("  id#posI#posJ#esHoriz#tamaño#")
     print(tabla_ids(panel))
+    
+    #numeroAProbar = 2
+    #print(numeroAProbar,"Es Horizontal",es_horizontal(panel,numeroAProbar)) #0 es vertical, 1 horizontal y 2 ambos
+    
+    
+    
+
+    
+    
+    
+    
+    
+"""
+    Funcio Backtracking(LVA,LVNA,R,D)
+        Si (LVNA és buida) llavors Retornar(LVA) fSi
+        Var=Cap(LVNA);
+        Per a cada (valor del Domini(Var, D) que podem assignar a Var) fer
+            Si (SatisfaRestriccions([Var valor],LVA,R)) llavors
+                Res=Backtracking(Insertar([Var, valor],LVA),Cua(LVNA),R,D);
+                Si (Res és una solució completa)  llavors 
+                    Retornar(Res);
+                Fsi
+            Fsi
+        Fper
+        Retornar(Falla)
+    FFuncio
+    
+
+    
+SatisfaRestriccions(, ,) g g A,LVA,R): Retorna cert si l’assignació A afegida la llista
+d’assignacions LVA satisfan les restriccions R.
+
+Domini(V,D): Retorna un valor del domini D per a la variable V.
+
+Insertar(e,L):Retorna la llista resultant d’afegir e al principi de L.
+
+Cua(L) i Cap(L): Retornen la cua i el cap de L, respectivament.
+    """
+    
