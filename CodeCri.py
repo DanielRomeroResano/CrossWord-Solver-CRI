@@ -64,7 +64,7 @@ def es_horizontal(panel,id):
     auxI,auxJ=busca_pos_ij(panel,id)    #i=fila  j =columna
     ret=0
     if(auxJ < len(panel[0]) -1 and panel[auxI][auxJ+1] >= 0):
-        if(auxI < len(panel) and panel[auxI+1][auxJ] == -1):
+        if(auxI < len(panel)-1 and panel[auxI+1][auxJ] == -1):
            ret = 1
         if(busca_arriba(panel,auxI,auxJ) == 1):
             ret = 1
@@ -73,8 +73,18 @@ def es_horizontal(panel,id):
     return ret      
 
 
-
-
+def len_palabra(panel,id):
+    longitud = 0
+    i,j = busca_pos_ij(panel,id)
+    if(es_horizontal(panel,id) == 1):
+        while(j<len(panel[i]) and panel[i][j]>=0):
+            longitud = longitud +1
+            j = j+1
+    elif(es_horizontal(panel,id) == 0):
+        while(i<len(panel) and panel[i][j]>=0):
+            longitud = longitud +1
+            i = i+1
+    return longitud
 
 
 def classificarDiccionario(path,diccionari):
@@ -90,7 +100,44 @@ def classificarDiccionario(path,diccionari):
         diccionari[tamany-1].append(np.array(palabra,dtype=np.int8) )
     return palabra
 
-
+###########id###pos i###posj###esHoriz###tamaño########
+def tabla_ids(panel):
+    tabla_ids = np.zeros((np.max(panel),5))
+    maxPanel = np.max(panel)
+    for id in range(1,np.max(panel)+1):
+        auxLine = np.zeros(5)
+        auxLine[0]=id
+        auxLine[1],auxLine[2]=busca_pos_ij(panel,id)
+        vh =es_horizontal(panel,id)
+        if(vh == 1 or vh == 0):
+            auxLine[3]=vh
+            auxLine[4]=len_palabra(panel,id)
+        else:
+            auxLine[3]=0    #id actual vertical arbitrariamente
+            i,j=0,0
+            i,j=busca_pos_ij(panel,id)
+            longitud=0
+            while(i<len(panel) and panel[i][j]>=0):
+                longitud = longitud +1
+                i = i+1
+            auxLine[4]=longitud
+            
+            auxLine2 = np.zeros(5)  #creamos un nuevo id para la palabra en horizontal
+            maxPanel = maxPanel+1
+            auxLine2[0]=maxPanel
+            i,j=0,0
+            i,j=busca_pos_ij(panel,id)
+            auxLine2[1],auxLine2[2]=i,j
+            auxLine2[3]=1
+            longitud=0
+            while(j<len(panel[i]) and panel[i][j]>=0):
+                longitud = longitud +1
+                j = j+1
+            auxLine2[4]=longitud
+            tabla_ids = np.append(tabla_ids,auxLine2)
+            tabla_ids = np.reshape(tabla_ids,(-1,5))
+        tabla_ids[id-1]=auxLine
+    return tabla_ids
 
     
 if __name__ == '__main__':
@@ -114,11 +161,18 @@ if __name__ == '__main__':
 
     panel = np.array(panel,dtype=np.int8)            
     
-    dicci = {}
-    for i in range(2,16):
-        dicci[i] = []
-    hola = classificarDiccionario(diccionari,dicci)
+    #dicci = {}
+    #for i in range(2,16):
+     #   dicci[i] = []
+    #hola = classificarDiccionario(diccionari,dicci)
     
     
-    numeroAProbar = 2
+    numeroAProbar = 4
+    print
     print(numeroAProbar,"Es Horizontal",es_horizontal(panel,numeroAProbar)) #0 es vertical, 1 horizontal y 2 ambos
+    print 
+    print(numeroAProbar,"Longitud:",len_palabra(panel,numeroAProbar)) #0 es vertical, 1 horizontal y 2 ambos
+    print
+    print ("----------Tabla IDS----------")
+    print("  id#posI#posJ#esHoriz#tamaño#")
+    print(tabla_ids(panel))
