@@ -219,7 +219,6 @@ def classificarDiccionario(path):
     for i in range(2,18):
         diccionari[i] = np.array([],dtype=np.int8)  
     for linea in open(path):
-        
         palabra = []
         aux = linea.strip('\t')
         aux = linea.strip('\n')
@@ -243,7 +242,6 @@ def buscarChoque(panel,tablaID):
         tamany = tablaID[ID,4]
         if tablaID[ID,3] == 0:
             for pos in range(posI,posI+tamany):
-                
                 for ID2 in tablaID[:,0]:
                     if ID != ID2:
                         posI2 = tablaID[ID2,1]
@@ -258,7 +256,6 @@ def buscarChoque(panel,tablaID):
                                         diccChoques[ID+1] = np.reshape(diccChoques[ID+1], (-1,3))
         else:
             for pos in range(posJ,posJ+tamany):
-                
                 for ID2 in tablaID[:,0]:
                     if ID != ID2:
                         posI2 = tablaID[ID2,1]
@@ -344,6 +341,67 @@ def Backtracking(lva, lvna, d, diccChoque,r):
 
 ###############################################################################
 """
+                       BACKTRACKING FORWARD CHECKING
+"""
+###############################################################################
+
+def DominiFW(palabra,d):
+    return d[len(palabra[0])]
+
+
+def ActualizarDominio(palabra,lva,pos,da, diccChoque, tablaID):
+    #seCumple = True
+    listaChoque = diccChoque[pos[0]]
+     
+    nouDiccionari = {}
+    
+    #print "listachoque", listaChoque
+    for j in range(0,listaChoque.shape[0]):
+        
+         
+        id_palabra2 = listaChoque[j][1]
+        corte_palabra2 = listaChoque[j][2]
+        tamano = tablaID[id_palabra2-1][4]
+        nouDiccionari[tamano] = np.array([],dtype=np.int8) 
+        listaDicc = da[tamano]
+        for i in listaDicc :
+            if palabra[listaChoque[j][0]] != i[corte_palabra2]:
+                nouDiccionari[tamano] = np.append(nouDiccionari[tamano], i)
+                
+    #nouDiccionari = np.array(nouDiccionari,dtype=np.int8)
+    return nouDiccionari
+
+
+def ForwardBacktracking(lva, lvna, da, diccChoque,r, tablaID):
+    if lvna.size == 0 or r == 1:
+        r=1 
+        return lva,r
+    var=lvna[0]
+    for i in DominiFW(lva[var[0]],da):
+        #da = {}
+        da = ActualizarDominio(i, lva, var, da, diccChoque,tablaID)
+        if SatisfaRestriccions(i,lva,var[0],diccChoque) and da:
+                if var[0] == lvna[0,0]:
+                    lvna = np.delete(lvna,0,0)
+                lva,r=ForwardBacktracking(Insertar(i,lva, lvna,var[0],diccChoque),lvna,da, diccChoque,r,tablaID)
+                if lvna.size == 0 or r == 1:
+                    r=1
+                    return lva,r
+                Insertar(np.zeros(lva[var[0]].shape[1],dtype=np.int8),lva, lvna,var[0],diccChoque)
+    return lva,r
+
+
+
+
+
+
+
+
+
+
+
+###############################################################################
+"""
                                     MAIN
 """
 ###############################################################################
@@ -380,7 +438,8 @@ if __name__ == '__main__':
     ## BACKTRACKING ##
     r=0
     temps_Backtracking_i = time.time()
-    LVA,r= Backtracking(LVA,LVNA,dicci,diccChoque,r)
+    #LVA,r= Backtracking(LVA,LVNA,dicci,diccChoque,r)
+    LVA,r= ForwardBacktracking(LVA,LVNA,dicci,diccChoque,r,tablaID)
     temps_Backtracking_f = time.time() 
     temps_Backtracking = temps_Backtracking_f - temps_Backtracking_i
     
