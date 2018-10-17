@@ -416,6 +416,8 @@ if __name__ == '__main__':
     temps_ini_i = time.time()
     crossword = "crossword_CB.txt"
     diccionari = "diccionari_CB.txt"
+    algoritmo = 1
+    r = 0
     panel_raw = leer_panel(crossword)
     panel = StringToInt8(panel_raw)
     dicci = classificarDiccionario(diccionari)
@@ -443,12 +445,22 @@ if __name__ == '__main__':
 
     ### PROCESS ###
     ## BACKTRACKING ##
-    r=0
-    temps_Backtracking_i = time.time()
-    LVA,r= Backtracking(LVA,LVNA,dicci,diccChoque,r)
-    #LVA,r= ForwardBacktracking(LVA,LVNA,da,diccChoque,r,tablaID)
-    temps_Backtracking_f = time.time()
-    temps_Backtracking = temps_Backtracking_f - temps_Backtracking_i
+    if algoritmo == 0:
+        #r=0
+        temps_Backtracking_i = time.time()
+        LVA,r= Backtracking(LVA,LVNA,dicci,diccChoque,r)
+        temps_Backtracking_f = time.time()
+        temps_Backtracking = temps_Backtracking_f - temps_Backtracking_i
+    
+    
+    if algoritmo == 1:
+        #LVNA,LVA = inicializarLVNA_LVA(tablaID)
+       # r=0
+    
+        temps_ForBacktracking_i = time.time()
+        LVA,r= ForwardBacktracking(LVA,LVNA,da,diccChoque,r,tablaID)
+        temps_ForBacktracking_f = time.time()
+        temps_ForBacktracking = temps_ForBacktracking_f - temps_ForBacktracking_i
 
 
     ### FINAL ###
@@ -457,4 +469,5 @@ if __name__ == '__main__':
     print_panel_final(panel)
     print
     print "\nInicialitzacio: %f segons." % (temps_ini)
-    print "\nBacktracking: %f segons." % (temps_Backtracking)
+    if algoritmo == 0: print "\nBacktracking: %f segons." % (temps_Backtracking)
+    if algoritmo == 1: print "\nForward Backtracking: %f segons." % (temps_ForBacktracking)
